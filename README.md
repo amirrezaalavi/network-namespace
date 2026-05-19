@@ -397,7 +397,7 @@ PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 
 The response is different here, its not like Network is unreachable but it seems that the packet is stuck somewhere, we have to find where the packet get stuck. To debug packet flow we have a very useful tool called *tcpdump*, a powerful comman-line packet analyzer.
 
-In our scenario, ping command goes from earth interface to host via `planet-br`. So first lets debug from `planet-br`, does the packet came here.
+In our scenario, ping command goes from earth interface to host via `planet-br`. So first lets debug from `planet-br`, did the packet come here.
 
 run ping command from earth namespace as we did earlier and in a new ssh session run this command from host
 
@@ -438,7 +438,7 @@ We can use the following sysctl command to enable or disable Linux IP forwarding
 # to disable
 > sudo sysctl -w net.ipv4.ip_forward=0
 # to enable
-> sudo sysctl -w net.ipv4.ip_forward=0
+> sudo sysctl -w net.ipv4.ip_forward=1
 ```
 
 Check the `eth0` interface again (make sure ping command is running)
@@ -453,7 +453,7 @@ listening on enp0s3, link-type EN10MB (Ethernet), capture size 262144 bytes
 14:17:49.400595 IP 10.10.0.10 > dns.google: ICMP echo request, id 2287, seq 3, length 64
 ```
 
-Finally `eth0` is recieving the packets but hold on packet is still stuck in earth interface. See tcpdump is only getting request logs but there are no reply logs here. From above we saw that packets is tring to reach google dns with private ip address `10.10.0.10`.
+Finally `eth0` is recieving the packets, but hold on, packet is still stuck in earth interface. See tcpdump is only getting request logs but there are no reply logs here. From above we saw that packets is tring to reach google dns with private ip address `10.10.0.10`.
 For private ip address google dns server can't reach back to earth interface beacuse same private ip address can use million of devices. So we need a public ip to reach to google dns.
 Here comes Network Address Translation (NAT), this will convert our private ip to public ip (in our case it will use ISP public ip). We need to add a Source NAT (SNAT) rule in the POSTROUTING chain.
 
