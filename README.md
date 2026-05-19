@@ -154,12 +154,12 @@ YES !!! It's working, they can talk with each other based on IP routing table.
 
 ARP table
 ```sh
-> sudo ip netns exec earth
+> sudo ip netns exec earth arp
 
 Address                  HWtype  HWaddress           Flags Mask            Iface
 10.10.0.20          ether   12:6c:8c:49:15:2c   C                     earth-veth
 
-> sudo ip netns exec neptune
+> sudo ip netns exec neptune arp
 
 Address                  HWtype  HWaddress           Flags Mask            Iface
 10.10.0.10          ether   26:61:7a:32:8a:72   C                     neptune-veth
@@ -337,8 +337,8 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 ```
 
 We got the issue, the host IP doesn't have any route table entry in earth namespace. He don't know this IP and can't eastablish a connection.
-So we need to add a default gateway so that which IP addresses are not matching they forward via bridge device (planet-br).
-We didn't assign any ip to our bridge (`planet-br`). First add am IP and then add default gateway to earth and neptune namespace.
+So we need to add a default gateway so that which IP addresses are not matching they forward via bridge device (`planet-br`).
+We didn't assign any ip to our bridge (`planet-br`). First add an IP and then add default gateway to earth and neptune namespace.
 
 ```sh
 > sudo ip addr add 10.10.0.1/16 dev planet-br
@@ -397,7 +397,7 @@ PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 
 The response is different here, its not like Network is unreachable but it seems that the packet is stuck somewhere, we have to find where the packet get stuck. To debug packet flow we have a very useful tool called *tcpdump*, a powerful comman-line packet analyzer.
 
-In our scenario, ping command goes from earth interface to host via planet-br. So first lets debug from `planet-br`, does the packet came here.
+In our scenario, ping command goes from earth interface to host via `planet-br`. So first lets debug from `planet-br`, does the packet came here.
 
 run ping command from earth namespace as we did earlier and in a new ssh session run this command from host
 
